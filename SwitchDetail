@@ -1,0 +1,25 @@
+sum('switch_arr').alias('switch_arr_sum')
+
+is_migrated_new = IF ( &&  &&, 1, 0)\
+
+(~(ISBLANK(pbi_product_migrations_units_data.migrated_to_dylan_order_numbe)))
+(pbi_product_migrations_units_data[datedifference] = TRUE)
+ ((pbi_product_migrations_units_data[migrated_to_product_name] <> pbi_product_migrations_units_data[migrated_from_product_name]) || (pbi_product_migrations_units_data[migrated_to_product_name] == pbi_product_migrations_units_data[migrated_from_product_name] && pbi_product_migrations_units_data[migrated_from_subs_offer] <> pbi_product_migrations_units_data[migrated_to_subs_offer]))
+
+
+
+
+
+
+
+(~(f.col('migrated_to_dylan_order_number').isNull())) & (f.col('datedifference')==True) & ((f.col('migrated_to_product_name')!=f.col('migrated_from_product_name')) | ((f.col('migrated_to_product_name')==f.col('migrated_from_product_name')) & (f.col('migrated_from_subs_offer')!=f.col('migrated_to_subs_offer'))))
+
+
+
+migration_df = spark.read.table('commerce_analytics.pbi_product_migrations_units_data')
+>>> migration_switch_df =  migration_df.withColumn('switch_arr',migration_df.migrated_to_arr - migration_df.migrated_from_arr)
+>>> migration_switch_df.printSchema()
+
+from pyspark.sql import functions as f
+>>> switch_df = migration_switch_df.groupBy('migration_path').agg(f.sum('switch_arr').alias('switch_arr_sum'))
+>>> switch_df.show()
